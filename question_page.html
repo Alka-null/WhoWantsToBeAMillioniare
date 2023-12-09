@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        @font-face {
+        font-family: "Patrick Hand";
+         src:   url('fonts/Patrick Hand/PatrickHand-Regular.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+        }
+        html{
+            font-size: 25px;
+        }
+        body{
+            /* height: 500px; */
+            font-family: 'Patrick Hand';
+            font-weight: 100;
+            font-size: 1rem;
+        }
+
+        .rounded{
+            border-radius: 1rem;
+        }
+        #container{
+            padding: 3rem;
+            text-align: center;
+        }
+        #lifelines{
+            display: inline-block;
+            position: relative;
+        }
+        /* #lifelines_wrapper{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            width: 10rem;
+        } */
+        .lifelines_wrapper{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            width: 10rem;
+        }
+
+        #lifelines_50_50{
+
+        }
+        #lifelines_AI_Bot{
+            
+        }
+        .lifeline{
+            background-color: darkgray;
+            width: 4rem;
+            height: 2rem;
+            font-family: 'Patrick Hand';
+            font-size: large;
+        }
+        .lifelines_click{
+            background-color: lightgrey;
+        }
+        #lifelines_wrapper> button{
+            /* background-color: darkgray;
+            width: 4rem; */
+            /* margin: 2rem */
+        }
+        .lifelineusedup{
+            display: none;
+        }
+        #oops{
+            display: inline-block;
+        }
+        /* The Modal (background) */
+        .modal {
+            display: none; /* Hidden by default */
+            position: absolute;
+            z-index: 1;
+            /* left: 1rem; */
+            top: 1rem;
+            width: 16rem;
+            height: 9rem;
+            /* overflow: auto; Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            background-color: #fefefe;
+        }
+
+        /* Modal Content/Box */
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            /* border: 1px solid #888; */
+            width: 80%; /* Could be more or less, depending on screen size */
+        }
+
+        .modal_backdrop{
+            background-color: rgba(0,0,0,0.4);
+        }
+        /* The Close Button */
+        .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+        }
+
+        #header{
+            /* Who wants to be a java script developer */
+
+            /* position: absolute; */
+            width: 18rem;
+            height: 6rem;
+            /* display: inline-block; */
+            font-family: 'Patrick Hand';
+            font-style: normal;
+            font-weight: 100;
+            font-size: 1rem;
+            text-align: center;
+            line-height: 6rem;
+            color: #000000;
+            margin: 0rem auto;        
+        }
+        #question_container{
+            border: #000000 solid 0.1rem;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            font-family: sans-serif;
+            font-weight: normal;
+            font-size: medium;
+            /* margin: 3rem 0rem; */
+            margin-bottom: 2rem;
+        }
+        #button_grid_container{
+            display: grid;
+            grid-template-columns: auto auto ;
+            grid-template-rows: auto auto;
+            column-gap: 3rem;
+            row-gap: 2rem;
+            height: fit-content;
+        }
+        #gridbutton1{
+            grid-column: 1/1;
+            grid-row: 1/1;
+        }
+        #gridbutton2{
+            grid-column: 2/2;
+            grid-row: 1/1;
+        }
+        #gridbutton3{
+            grid-column: 1/1;
+            grid-row: 2/2;
+        }
+        #gridbutton4{
+            grid-column: 2/2;
+            grid-row: 2/2;
+        }
+        .visibility{
+            visibility: hidden;
+        }
+        .option{
+            height: 80%;
+            padding: 0.5rem;
+            background-color: inherit;
+        }
+        .checkmark{
+            float: right;
+            /* display: none; */
+        }
+        .xmark{
+            float: right;
+            /* display: none; */
+        }
+        .success{
+            background-color: green;
+        }
+        .fail{
+            background-color: red;
+        }
+        #backnextcontainer{
+            width: 100%;
+            height: 2rem;
+            text-align: 'end'
+        }
+        .backnext{
+            background-color: inherit;
+            border: inherit;
+        }
+        .back{
+            float: left;
+            display: none
+        }
+        .next{
+            float: right;
+            display: inline
+        }
+        .hide{
+            display: none;
+        }
+        .show{
+            display: inline;
+        }
+        .disclosed_answer{
+            border:solid 0.1rem green;
+        }
+
+    </style>
+    <script>
+        const person = {
+            firstName: "John",
+            lastName : "Doe",
+            id       : 5566,
+            fullName : function() {
+                return this.firstName + " " + this.lastName;
+            }
+        };
+
+        let option_buttons = []
+        let answerlabels = {}
+        let questions_and_answers_bank = {}
+
+        function initializeVariables(){
+            option_buttons = Object.values(document.querySelectorAll('.option')) 
+            answerlabels = {
+                "A": 0,
+                "B": 1,
+                "C": 0,
+                "D": 1
+            }
+            questions_and_answers_bank = {
+                
+                next: 2,
+                current: 1,
+                lifelinesused: 0,
+                failedcount:0,
+                1:{
+                    question:'What will be the output of the following JavaScript code console(3 + “2”)?',
+                    options:[
+                        "A. 32",
+                        "B. var variableName;",
+                        "C. let variableName;",
+                        "D. int variableName;"
+                    ],
+                    answer: "A",
+                    correctoption: function(){
+                        var ind = answerlabels[this.answer]
+                        return option_buttons[ind]
+                    },
+                    wrongoptions: function(){
+                                    return option_buttons.filter((value, ind)=>{
+                                    return value!= this.correctoption()
+                                })},
+
+                    chosenanswer:"",
+                    answered: false
+                },
+                2:{
+                    question:'What will be the output of the following JavaScript code console(3 + “2”)?',
+                    options:[
+                        "A. 32",
+                        "B. var variableName;",
+                        "C. let variableName;",
+                        "D. int variableName;"
+                    ],
+                    answer: "A",
+                    correctoption: function(){
+                        var ind = answerlabels[this.answer]
+                        return option_buttons[ind]
+                    },
+                    wrongoptions: function(){
+                                    return option_buttons.filter((value, ind)=>{
+                                    return value!= this.correctoption()
+                                })},
+
+                    chosenanswer:"",
+                    answered: false
+                },
+                3:{
+                    question:'What will be the output of the following JavaScript code console(3 + “2”)?',
+                    options:[
+                        "A. 32",
+                        "B. var variableName;",
+                        "C. let variableName;",
+                        "D. int variableName;"
+                    ],
+                    answer: "A",
+                    correctoption: function(){
+                        var ind = answerlabels[this.answer]
+                        return option_buttons[ind]
+                    },
+                    wrongoptions: function(){
+                                    return option_buttons.filter((value, ind)=>{
+                                    return value!= this.correctoption()
+                                })},
+
+                    chosenanswer:"",
+                    answered: false
+                },
+            }
+
+        }
+
+        function fill(question_ind){
+            var question_element = document.querySelector('#question')
+            question.innerText = questions_and_answers_bank[question_ind]["question"]
+
+            var question_number = document.querySelector('#question_number')
+            question_number.innerText = `Question ${question_ind}: `
+
+            var option_buttons = document.querySelectorAll('.option')
+            option_buttons[0].innerText = questions_and_answers_bank[question_ind]["options"][0]
+            option_buttons[1].innerText = questions_and_answers_bank[question_ind]["options"][1]
+            option_buttons[2].innerText = questions_and_answers_bank[question_ind]["options"][2]
+            option_buttons[3].innerText = questions_and_answers_bank[question_ind]["options"][3]
+        }
+
+        function onSuccessRemoveFormat(eventelement){
+            // var option_buttons = document.querySelectorAll('.option')
+            var current_ind = questions_and_answers_bank['current']
+            var correctoption = questions_and_answers_bank[current_ind]['correctoption']()
+            for (const option_button of option_buttons) {
+                if(correctoption != option_button){
+                    option_button.classList.remove('fail')
+                    // option_button.innerText = ''
+                }
+                else{
+                    correctoption.classList.remove('success')
+                }
+
+                if(option_button.classList.contains('disclosed_answer'))
+                option_button.classList.remove('disclosed_answer')
+            }
+        }
+
+        function onBackRemoveFormats(eventelement){
+            // var option_buttons = document.querySelectorAll('.option')
+
+            for (const option_button of option_buttons) {
+
+                // var failorsuccessmark = option_button.querySelector('span')
+                // option_button.removeChild(failorsuccessmark)
+                option_button.innerText = ''
+
+                if(option_button.classList.contains('fail'))
+                option_button.classList.remove('fail')
+
+                if(option_button.classList.contains('success'))
+                option_button.classList.remove('success')
+
+                if(option_button.classList.contains('disclosed_answer'))
+                option_button.classList.remove('disclosed_answer')
+            }
+        }
+        
+        function eventHandler(ev){
+                console.log('i was clicked')
+
+                var current_ind = questions_and_answers_bank['current']
+                // var next = questions_and_answers_bank['next']
+                // var answer = questions_and_answers_bank[current_ind]['answer']
+
+
+                if(questions_and_answers_bank[current_ind]['answered'] == true){
+                    return
+                }
+
+                var chosenanswer = ev.target.innerText
+
+                questions_and_answers_bank[current_ind]['chosenanswer'] = chosenanswer
+                questions_and_answers_bank[current_ind]['answered'] = true
+
+                checkAnswerAndFormat(ev.target)
+
+        }
+
+        function checkAnswerAndFormat(target){
+
+            var current_ind = questions_and_answers_bank['current']
+            var next = questions_and_answers_bank['next']
+
+            var correctoption = questions_and_answers_bank[current_ind]['correctoption']()
+            var answer = correctoption.innerText
+            if(correctoption == target){
+                    target.classList.add('success')
+                    // var checkmark = ev.target.querySelector('.checkmark')
+                    var span = document.createElement('span')
+                    span.innerHTML = '&#10003;'
+                    span.classList.add('checkmark')
+                    target.appendChild(span)
+
+                }
+                else{
+                    // ev.target.style.backgroundColor = 'red'
+                    target.classList.add('fail')
+                    // var checkmark = ev.target.querySelector('.checkmark')
+                    var span = document.createElement('span')
+                    span.innerText = 'x'
+                    span.classList.add('xmark')
+                    target.appendChild(span)
+
+
+                    correctoption.classList.add('disclosed_answer')
+                    var span = document.createElement('span')
+                    span.innerHTML = '&#10003;'
+                    span.classList.add('checkmark')
+                    correctoption.appendChild(span)
+
+                    questions_and_answers_bank['failedcount']++
+                }
+
+        }
+        function addEventListeners(){
+            var lifelines_50_50 = document.querySelector('#lifelines_50_50')
+            lifelines_50_50.addEventListener('click', lifeline_50_50_eventhandler)
+            
+            var lifelines_AI_Bot = document.querySelector('#lifelines_AI_Bot')
+            lifelines_AI_Bot.addEventListener('click', lifeline_AI_Bot_eventhandler)
+
+            // var option_buttons = document.querySelectorAll('.option')
+
+            for (const option_button of option_buttons) {
+                option_button.addEventListener('click', eventHandler)
+            }
+
+            var next = document.querySelector('.next')
+            next.addEventListener('click', nextEventHandler)
+
+            var back = document.querySelector('#back')
+            back.addEventListener('click', backEventHandler)
+        }
+
+        function lifeline_50_50_eventhandler(ev){
+            if(questions_and_answers_bank['answered'] == true){
+                return
+            }
+            ev.target.classList.add('lifelines_click')
+            var current_ind = questions_and_answers_bank['current']
+
+            var correctoption = questions_and_answers_bank[current_ind]['correctoption']()
+            var otheroptions = questions_and_answers_bank[current_ind]['wrongoptions']()
+
+
+            var wrongrandomtoshow = otheroptions[Math.floor(Math.random()*(otheroptions.length-1))]
+            var optionstohide = otheroptions.filter((value, ind)=>{
+                return (value!= correctoption && value!= wrongrandomtoshow)
+            })
+
+            optionstohide.forEach(element => {
+                element.classList.add('hide')
+            });
+
+            ev.target.classList.add('lifelines_click')
+            ev.target.removeEventListener('click', lifeline_50_50_eventhandler)
+            questions_and_answers_bank['lifelinesused']++
+        }
+
+        function lifeline_AI_Bot_eventhandler(ev){
+
+            var current_ind = questions_and_answers_bank['current']
+            var AIanswer = questions_and_answers_bank[current_ind]['answer']
+
+            var modaltext = document.querySelector('#modaltext').innerText + " " + AIanswer
+
+            document.querySelector('#modaltext').innerText = modaltext
+
+            // Get the modal
+            var modal = document.getElementById("myModal");
+
+            // Get the button that opens the modal
+            var btn = document.getElementById("lifelines_AI_Bot");
+
+            // Get the <span> element that closes the modal
+            var span = document.getElementsByClassName("close")[0];
+
+            // When the user clicks on the button, open the modal
+            modal.style.display = "block";
+
+
+            // When the user clicks on <span> (x), close the modal
+            span.onclick = function() {
+                onModalCloseActions()
+            }
+
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function(event) {
+                var modal = document.getElementById("myModal");
+
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+
+            document.querySelector('body').classList.add('modal_backdrop')
+            var lifelines = Object.values(document.querySelectorAll('#lifelines_wrapper> button'))
+            lifelines.forEach((value)=> value.classList.add('modal_backdrop'))
+            ev.target.classList.add('lifelines_click')
+
+            ev.target.removeEventListener('click', lifeline_AI_Bot_eventhandler)
+            questions_and_answers_bank['lifelinesused']++
+        }
+
+        function onModalCloseActions(){
+            if(questions_and_answers_bank['lifelinesused']> 1){
+                document.querySelector('#lifelines_wrapper').classList.add('hide')
+                document.querySelector('.lifelineusedup').classList.add('show')
+            }
+            var modal = document.getElementById("myModal");
+            modal.style.display = "none";
+
+            var lifelines = Object.values(document.querySelectorAll('#lifelines_wrapper> button'))
+            lifelines.forEach((value)=> value.classList.remove('modal_backdrop'))
+
+            document.querySelector('body').classList.remove('modal_backdrop')
+        }
+
+        function nextEventHandler(ev){
+            var current_ind = questions_and_answers_bank['current']
+            var next = questions_and_answers_bank['next']
+            otheroptions = questions_and_answers_bank[current_ind].wrongoptions()
+            // var answer = questions_and_answers_bank[current_ind]['answer']
+            
+            //Check If the end of quiz is reached
+            if(questions_and_answers_bank[next] == null 
+            && questions_and_answers_bank[current_ind]['answered'] == true){
+                if(questions_and_answers_bank['failedcount']>0){
+                    window.location.assign("tryagainpage.html");
+                }
+                else{
+                    var next = document.querySelector('.next')
+                    next.classList.remove('next')
+                    next.classList.add('hide')
+
+                    console.log('the end reached')
+
+                    window.location.assign("congratulationspage.html");
+                    return
+                }
+            }
+
+            //Check If current question is answered before moving to next question
+            if(questions_and_answers_bank[current_ind]['answered'] == true){
+                
+                onSuccessRemoveFormat(ev.target)
+
+                fill(next)
+
+                questions_and_answers_bank['next']++
+                questions_and_answers_bank['current']++
+
+                var back = document.querySelector('#back')
+                back.classList.add('show')
+                back.classList.add('back')
+
+                questions_and_answers_bank[current_ind]['answered'] == false
+
+                if(questions_and_answers_bank['lifelinesused']> 1){
+                    document.querySelector('#lifelines_wrapper').classList.add('hide')
+                    document.querySelector('.lifelineusedup').classList.add('show')
+                }
+
+            
+            }
+
+            otheroptions.forEach((element)=>{
+                element.classList.remove('hide')
+                element.classList.add('option')
+            })
+
+
+        }
+
+        function backEventHandler(ev){
+            questions_and_answers_bank['current']--
+            questions_and_answers_bank['next']--
+
+            var current_ind = questions_and_answers_bank['current']
+            var next = questions_and_answers_bank['next']
+            // var answer = questions_and_answers_bank[current_ind]['answer']
+
+            if(questions_and_answers_bank[current_ind-1] == null){
+                var next = document.querySelector('.next')
+                next.classList.add('next')
+
+                var back = document.querySelector('#back')
+                back.classList.remove('back')
+                back.classList.remove('show')
+                back.classList.add('hide')
+
+                onBackActions(current_ind)
+
+                console.log('the end reached')
+                return
+            }
+
+            onBackActions(current_ind)
+
+            var back = document.querySelector('#back')
+            back.classList.add('show')
+        }
+
+        function onBackActions(current_ind){
+            onBackRemoveFormats()
+            
+            fill(current_ind)
+            
+            var target = getTarget()
+            checkAnswerAndFormat(target)
+        }
+        function getTarget(){
+            var option_buttons = document.querySelectorAll('.option')
+            var current_ind = questions_and_answers_bank['current']
+            var chosenanswer = questions_and_answers_bank[current_ind]['chosenanswer']
+
+            for (const option_button of option_buttons) {
+                if(option_button.innerText == chosenanswer){
+                    return option_button
+                }
+            }
+        }
+
+        window.onload = function(e){
+            initializeVariables()
+            //populate first page
+            fill(1)
+            debugger
+            addEventListeners()
+        }
+    
+    </script>
+</head>
+<body>
+    <div id = "container">
+        <div id = lifelines>
+            <div id = lifelines_wrapper class = "lifelines_wrapper">
+                <button id = "lifelines_50_50" class ="lifeline rounded">50/50</button>
+                <button id = "lifelines_AI_Bot" class ="lifeline rounded">Ask AI Bot</button>
+            </div>
+
+            <!-- The Modal -->
+            <div id="myModal" class="modal rounded">
+
+                <!-- Modal content -->
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <p id="modaltext">AI thinks the answer is </p>
+                </div>
+            
+            </div>
+
+            <div id="lifelineusedup" class="lifelineusedup rounded">
+
+                <!-- Modal content -->
+                <div class="">
+                    <div id="oops">
+                        <svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g clip-path="url(#clip0_67_46)">
+                            <path d="M25.9992 40.8574C29.0746 40.8574 31.5706 37.9454 31.5706 34.3574C31.5706 30.7694 29.0746 27.8574 25.9992 27.8574C22.9237 27.8574 20.4277 30.7694 20.4277 34.3574C20.4277 37.9454 22.9237 40.8574 25.9992 40.8574Z" stroke="black" stroke-width="3.71429" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M25.9993 50.1431C32.4024 50.1431 38.5432 47.5995 43.0709 43.0719C47.5985 38.5442 50.1422 32.4034 50.1422 26.0003C50.1422 19.5972 47.5985 13.4564 43.0709 8.9287C38.5432 4.40104 32.4024 1.85742 25.9993 1.85742C19.5962 1.85742 13.4554 4.40104 8.92772 8.9287C4.40006 13.4564 1.85645 19.5972 1.85645 26.0003C1.85645 32.4034 4.40006 38.5442 8.92772 43.0719C13.4554 47.5995 19.5962 50.1431 25.9993 50.1431Z" stroke="black" stroke-width="3.71429" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M19.8522 12.9404C21.0036 13.8839 23.5404 14.4893 25.9993 14.4893C28.4582 14.4893 30.9913 13.8839 32.1427 12.9404M15.785 22.2856C15.5387 22.2856 15.3026 22.1877 15.1284 22.0136C14.9543 21.8395 14.8564 21.6033 14.8564 21.357C14.8564 21.1107 14.9543 20.8745 15.1284 20.7004C15.3026 20.5263 15.5387 20.4284 15.785 20.4284C16.0313 20.4284 16.2675 20.5263 16.4416 20.7004C16.6158 20.8745 16.7136 21.1107 16.7136 21.357C16.7136 21.6033 16.6158 21.8395 16.4416 22.0136C16.2675 22.1877 16.0313 22.2856 15.785 22.2856ZM36.2136 22.2856C35.9673 22.2856 35.7311 22.1877 35.557 22.0136C35.3828 21.8395 35.285 21.6033 35.285 21.357C35.285 21.1107 35.3828 20.8745 35.557 20.7004C35.7311 20.5263 35.9673 20.4284 36.2136 20.4284C36.4599 20.4284 36.696 20.5263 36.8702 20.7004C37.0443 20.8745 37.1422 21.1107 37.1422 21.357C37.1422 21.6033 37.0443 21.8395 36.8702 22.0136C36.696 22.1877 36.4599 22.2856 36.2136 22.2856Z" stroke="black" stroke-width="3.71429" stroke-linecap="round" stroke-linejoin="round"/>
+                            </g>
+                            <defs>
+                            <clipPath id="clip0_67_46">
+                            <rect width="52" height="52" fill="white"/>
+                            </clipPath>
+                            </defs>
+                        </svg>
+                            
+                    </div>
+                    <p>Oops you have used up your lifeline</p>
+                </div>
+            
+            </div>
+        </div>
+
+        <div id = "header">
+            Who wants to be a JavaScript Developer
+        </div>
+        <div id="backnextcontainer">
+            <button id = 'back' class = 'back backnext'>< Back</button>     <button id = 'next' class ='next backnext'>Next ></button>
+        </div> 
+        <div id = "question_container">
+            <span id = "question_number"></span> 
+            <span id = "question"> </span>
+        </div>
+        <div id = "button_grid_container">
+            <button id ="gridbutton1" class = "rounded option" >
+                <span class = "checkmark">&#10003;</span>
+            </button>
+            <button id ="gridbutton2" class = "rounded option" >
+                <span class = "checkmark">&#10003;</span>
+            </button>
+            <button id ="gridbutton3" class = "rounded option" >
+                <span class = "checkmark">&#10003;</span>
+            </button>
+            <button id ="gridbutton4" class = "rounded option" >
+                <span class = "checkmark">&#10003;</span>
+            </button>
+        </div>
+    </div>
+</body>
+
+</html>
