@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Quiz Page</title>
+    <link rel="stylesheet" type="text/css" href="CSS/core.css" /> 
     <style>
-        @font-face {
+                @font-face {
         font-family: "Patrick Hand";
          src:   url('fonts/Patrick Hand/PatrickHand-Regular.ttf') format('truetype');
         font-weight: normal;
@@ -213,6 +214,7 @@
             border:solid 0.1rem green;
         }
 
+
     </style>
     <script>
         const person = {
@@ -243,14 +245,14 @@
                 lifelinesused: 0,
                 failedcount:0,
                 1:{
-                    question:'What will be the output of the following JavaScript code console(3 + “2”)?',
+                    question:'What is the correct way to declare a variable in JavaScript?',
                     options:[
                         "A. 32",
                         "B. var variableName;",
                         "C. let variableName;",
                         "D. int variableName;"
                     ],
-                    answer: "A",
+                    answer: "B",
                     correctoption: function(){
                         var ind = answerlabels[this.answer]
                         return option_buttons[ind]
@@ -267,9 +269,9 @@
                     question:'What will be the output of the following JavaScript code console(3 + “2”)?',
                     options:[
                         "A. 32",
-                        "B. var variableName;",
-                        "C. let variableName;",
-                        "D. int variableName;"
+                        "B. 5",
+                        "C. NaN",
+                        "D. 6"
                     ],
                     answer: "A",
                     correctoption: function(){
@@ -285,12 +287,54 @@
                     answered: false
                 },
                 3:{
-                    question:'What will be the output of the following JavaScript code console(3 + “2”)?',
+                    question:'Which method is used to add an element to the end of an array in JavaScript?',
                     options:[
-                        "A. 32",
-                        "B. var variableName;",
-                        "C. let variableName;",
-                        "D. int variableName;"
+                        "A. append()",
+                        "B. push()",
+                        "C. addToEnd()",
+                        "D. addElement()"
+                    ],
+                    answer: "B",
+                    correctoption: function(){
+                        var ind = answerlabels[this.answer]
+                        return option_buttons[ind]
+                    },
+                    wrongoptions: function(){
+                                    return option_buttons.filter((value, ind)=>{
+                                    return value!= this.correctoption()
+                                })},
+
+                    chosenanswer:"",
+                    answered: false
+                },
+                4:{
+                    question:'What does the === operator in JavaScript compare?',
+                    options:[
+                        "A. Values only",
+                        "B. Values only",
+                        "C. Data types only",
+                        "D. None of the above"
+                    ],
+                    answer: "A",
+                    correctoption: function(){
+                        var ind = answerlabels[this.answer]
+                        return option_buttons[ind]
+                    },
+                    wrongoptions: function(){
+                                    return option_buttons.filter((value, ind)=>{
+                                    return value!= this.correctoption()
+                                })},
+
+                    chosenanswer:"",
+                    answered: false
+                },
+                5:{
+                    question:'What is the purpose of the setTimeout function in JavaScript?',
+                    options:[
+                        "A. To execute a function after a specified delay",
+                        "B. To set the current date and time",
+                        "C. To create a loop",
+                        "D. To pause the execution of a function"
                     ],
                     answer: "A",
                     correctoption: function(){
